@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deblurring UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="screen">
+    <section class="hero">
+      <h1>Image Deblurring</h1>
+      <p>Upload photos to fix blurry pictures</p>
+    </section>
+
+    <section class="composer">
+      <div class="controls single-row">
+        <div class="left-controls">
+          <button class="upload-btn" id="attachBtn" aria-label="Attach">
+            Upload Blurred Image
+          </button>
+          <span class="file-name" id="fileName">No file selected</span>
+        </div>
+        <div class="right-controls">
+          <button class="send-btn" id="sendBtn" aria-label="Deblur">
+            <span class="arrow"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="preview" id="preview">
+      <div class="preview-card">
+        <p class="preview-title">Output Preview</p>
+        <img id="resultImg" alt="Deblurred output will appear here" hidden />
+        <p class="preview-status" id="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <input type="file" id="fileInput" accept="image/*" hidden />
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const attachBtn = document.getElementById("attachBtn");
+    const sendBtn = document.getElementById("sendBtn");
+    const status = document.getElementById("status");
+    const resultImg = document.getElementById("resultImg");
+    const fileName = document.getElementById("fileName");
+
+    let selectedFile = null;
+
+    attachBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => {
+      selectedFile = e.target.files[0] || null;
+      if (selectedFile) {
+        fileName.textContent = selectedFile.name;
+        status.textContent = "Ready to deblur. Click the green button.";
+      } else {
+        fileName.textContent = "No file selected";
+      }
+    });
+
+    sendBtn.addEventListener("click", async () => {
+      if (!selectedFile) {
+        status.textContent = "Please attach a blurred image first.";
+        return;
+      }
+
+      status.textContent = "Deblurring... please wait.";
+
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+
+      try {
+        const res = await fetch("/api/deblur", { method: "POST", body: formData });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Failed to deblur image");
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        resultImg.src = url;
+        resultImg.hidden = false;
+        status.textContent = "Done. Output shown below.";
+      } catch (err) {
+        status.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
