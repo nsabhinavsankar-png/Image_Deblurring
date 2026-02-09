@@ -119,6 +119,15 @@ Only **4 Python files** are used to keep things simple.
    git submodule update --init --recursive
    ```
 
+## Quick Demo (Recommended)
+1. Start the pretrained UI (fastest demo):
+   ```bash
+   conda activate deblurganv2
+   python external/DeblurGANv2/app.py --weights external/DeblurGANv2/best_fpn.h5
+   ```
+2. Open `http://127.0.0.1:5000`
+3. Upload a blurred image and click the green button.
+
 ---
 
 ## Notes for Viva / Seminar
