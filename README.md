@@ -114,6 +114,11 @@ Only **4 Python files** are used to keep things simple.
      ```
    - Open your browser to `http://127.0.0.1:5000`
 
+9. Submodule Setup (if you cloned the repo fresh)
+   ```bash
+   git submodule update --init --recursive
+   ```
+
 ---
 
 ## Notes for Viva / Seminar
